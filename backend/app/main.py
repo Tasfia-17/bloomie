@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import wellness, today, insights, nest, quests, chat, weather, calendar, nutrition, caffeine, spotify, ecosystem, clinical, privacy
+from .routers import wellness, today, insights, nest, quests, chat, weather, calendar, nutrition, caffeine, spotify, ecosystem, clinical, privacy, auth
 
 load_dotenv()
 
@@ -38,6 +38,7 @@ app.add_middleware(
 )
 
 # Register routers
+app.include_router(auth.router)
 app.include_router(wellness.router)
 app.include_router(today.router)
 app.include_router(insights.router)
