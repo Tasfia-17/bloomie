@@ -142,4 +142,9 @@ export const api = {
   updatePrivacy: (metric: string, audience: string, allowed: boolean, userId?: string) =>
     request(`/api/privacy?user_id=${userId || getCurrentUserId()}`, { method: "PUT", body: { metric, audience, allowed } }),
   getAuditLog: (userId?: string) => request<Record<string, unknown>>(`/api/privacy/audit-log?user_id=${userId || getCurrentUserId()}`),
+
+  // Garden Items
+  getGardenItems: (userId?: string) => request<Record<string, unknown>>(`/api/garden/items?user_id=${userId || getCurrentUserId()}`),
+  plantGardenItem: (metric: string, value = "", userId?: string) =>
+    request<Record<string, unknown>>(`/api/garden/plant?metric=${metric}&value=${value}&user_id=${userId || getCurrentUserId()}`, { method: "POST" }),
 };

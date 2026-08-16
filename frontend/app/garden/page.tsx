@@ -39,14 +39,17 @@ function GardenPage() {
   const [showQuests, setShowQuests] = useState(false);
   const [animalMsg, setAnimalMsg] = useState<string | null>(null);
   const [bloomieNarrative, setBloomieNarrative] = useState("Your garden is growing beautifully! 🌸");
+  const [gardenItems, setGardenItems] = useState<Array<{ emoji: string; item_name: string; source_metric: string; planted_at: string }>>([]);
+  const [showItems, setShowItems] = useState(false);
 
   // Fetch garden state and quests
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [todayData, questsData] = await Promise.all([
+        const [todayData, questsData, itemsData] = await Promise.all([
           api.getToday(),
           api.getQuests(),
+          api.getGardenItems(),
         ]);
         if (todayData) {
           const gs = todayData.garden_state as GardenState;
@@ -54,6 +57,9 @@ function GardenPage() {
           if (todayData.bloomie_thought) setBloomieNarrative(todayData.bloomie_thought as string);
         }
         if (questsData) setQuests(questsData as Quest[]);
+        if (itemsData && (itemsData as { items: [] }).items) {
+          setGardenItems((itemsData as { items: Array<{ emoji: string; item_name: string; source_metric: string; planted_at: string }> }).items);
+        }
       } catch {
         // API unavailable, use defaults
       }
@@ -185,6 +191,17 @@ function GardenPage() {
               Quests ({quests.filter((q) => q.status === "active").length})
             </span>
           </button>
+
+          {/* Garden items button */}
+          <button
+            onClick={() => setShowItems(!showItems)}
+            className="glass px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-white/80 transition-colors"
+          >
+            <span className="text-sm">🌸</span>
+            <span className="text-xs font-semibold text-bloom-deep">
+              Items ({gardenItems.length})
+            </span>
+          </button>
         </div>
       </div>
 
@@ -220,6 +237,38 @@ function GardenPage() {
                   )}
                 </div>
               ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Garden Items Panel */}
+      <AnimatePresence>
+        {showItems && (
+          <motion.div
+            className="absolute bottom-36 left-4 right-4 z-20 max-w-md mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+          >
+            <div className="glass-strong rounded-2xl p-4 max-h-60 overflow-y-auto">
+              <h3 className="text-sm font-bold text-bloom-deep mb-2">Your Garden Items 🌸 ({gardenItems.length})</h3>
+              {gardenItems.length === 0 && (
+                <p className="text-xs text-bloom-deep/50">Log wellness data to plant items here!</p>
+              )}
+              <div className="grid grid-cols-4 gap-2">
+                {gardenItems.slice(0, 20).map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="flex flex-col items-center gap-0.5 p-2 rounded-xl bg-white/50 hover:bg-white/80 transition-colors cursor-pointer"
+                    whileHover={{ scale: 1.1 }}
+                    title={`${item.item_name} (from ${item.source_metric})`}
+                  >
+                    <span className="text-xl">{item.emoji}</span>
+                    <span className="text-[8px] text-bloom-deep/40 text-center leading-tight">{item.item_name}</span>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}

@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import wellness, today, insights, nest, quests, chat, weather, calendar, nutrition, caffeine, spotify, ecosystem, clinical, privacy, auth
+from .routers import wellness, today, insights, nest, quests, chat, weather, calendar, nutrition, caffeine, spotify, ecosystem, clinical, privacy, auth, garden
 
 load_dotenv()
 
@@ -53,6 +53,7 @@ app.include_router(spotify.router)
 app.include_router(ecosystem.router)
 app.include_router(clinical.router)
 app.include_router(privacy.router)
+app.include_router(garden.router)
 
 
 @app.get("/health")
