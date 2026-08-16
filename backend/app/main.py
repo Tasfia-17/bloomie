@@ -57,4 +57,16 @@ app.include_router(privacy.router)
 @app.get("/health")
 async def health_check() -> dict[str, str]:
     """Health check endpoint."""
-    return {"status": "healthy", "service": "bloomie-api", "version": "0.2.0"}
+    return {"status": "healthy", "service": "bloomie-api", "version": "0.2.1"}
+
+
+@app.get("/debug/db")
+async def debug_db() -> dict:
+    """Debug: test database connection."""
+    try:
+        from .services.supabase_client import get_supabase_client, DEMO_USER_UUID
+        sb = get_supabase_client()
+        resp = sb.table("profiles").select("id,name,email").eq("id", DEMO_USER_UUID).execute()
+        return {"status": "connected", "demo_user": resp.data, "count": len(resp.data)}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
