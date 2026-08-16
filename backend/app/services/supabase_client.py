@@ -55,14 +55,20 @@ def get_supabase_client() -> Client:
 def get_profile(user_id: str) -> Optional[dict]:
     user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
-    resp = sb.table("profiles").select("*").eq("id", user_id).single().execute()
-    return resp.data if resp.data else None
+    try:
+        resp = sb.table("profiles").select("*").eq("id", user_id).single().execute()
+        return resp.data if resp.data else None
+    except Exception:
+        return None
 
 
 def get_profile_by_email(email: str) -> Optional[dict]:
     sb = get_supabase_client()
-    resp = sb.table("profiles").select("*").eq("email", email).single().execute()
-    return resp.data if resp.data else None
+    try:
+        resp = sb.table("profiles").select("*").eq("email", email).single().execute()
+        return resp.data if resp.data else None
+    except Exception:
+        return None
 
 
 def create_profile(data: dict) -> dict:
@@ -158,15 +164,18 @@ def create_assessment(data: dict) -> dict:
 def get_latest_assessment(user_id: str) -> Optional[dict]:
     user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
-    resp = (
-        sb.table("assessments")
-        .select("*")
-        .eq("user_id", user_id)
-        .order("created_at", desc=True)
-        .limit(1)
-        .execute()
-    )
-    return _fix_row(resp.data[0]) if resp.data else None
+    try:
+        resp = (
+            sb.table("assessments")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        return _fix_row(resp.data[0]) if resp.data else None
+    except Exception:
+        return None
 
 
 def get_assessments(user_id: str, limit: int = 30) -> list[dict]:
