@@ -25,7 +25,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-USER_ID = "demo"
+USER_ID = "00000000-0000-0000-0000-000000000001"
 DEMO_EMAIL = "bloom@bloomie.app"
 DEMO_NAME = "Bloom Gardener"
 DAYS = 14

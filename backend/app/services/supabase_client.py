@@ -11,6 +11,16 @@ from supabase import create_client, Client
 _JSONB_FIELDS = {"value", "medications", "contacts", "clinical_alert", "garden_state",
                  "insights", "deviations", "recommendations", "permissions", "context"}
 
+# Demo user UUID (used when user_id="demo")
+DEMO_USER_UUID = "00000000-0000-0000-0000-000000000001"
+
+
+def _resolve_user_id(user_id: str) -> str:
+    """Resolve 'demo' to the actual UUID."""
+    if user_id == "demo":
+        return DEMO_USER_UUID
+    return user_id
+
 
 def _fix_row(row: dict) -> dict:
     """Parse any JSONB fields that were stored as double-encoded strings."""
@@ -43,6 +53,7 @@ def get_supabase_client() -> Client:
 # ---------------------------------------------------------------------------
 
 def get_profile(user_id: str) -> Optional[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = sb.table("profiles").select("*").eq("id", user_id).single().execute()
     return resp.data if resp.data else None
@@ -61,6 +72,7 @@ def create_profile(data: dict) -> dict:
 
 
 def update_profile(user_id: str, data: dict) -> dict:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     data["updated_at"] = datetime.utcnow().isoformat()
     resp = sb.table("profiles").update(data).eq("id", user_id).execute()
@@ -72,6 +84,7 @@ def update_profile(user_id: str, data: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def create_wellness_data(user_id: str, category: str, metric: str, value: dict, source: str = "manual", recorded_at: Optional[datetime] = None) -> dict:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     row: dict = {
         "user_id": user_id,
@@ -87,6 +100,7 @@ def create_wellness_data(user_id: str, category: str, metric: str, value: dict, 
 
 
 def get_wellness_data(user_id: str, category: Optional[str] = None, metric: Optional[str] = None, limit: int = 50) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     query = sb.table("wellness_data").select("*").eq("user_id", user_id)
     if category:
@@ -98,6 +112,7 @@ def get_wellness_data(user_id: str, category: Optional[str] = None, metric: Opti
 
 
 def get_wellness_data_range(user_id: str, start: str, end: str, category: Optional[str] = None) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     query = sb.table("wellness_data").select("*").eq("user_id", user_id).gte("recorded_at", start).lte("recorded_at", end)
     if category:
@@ -111,12 +126,14 @@ def get_wellness_data_range(user_id: str, start: str, end: str, category: Option
 # ---------------------------------------------------------------------------
 
 def get_baselines(user_id: str) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = sb.table("baselines").select("*").eq("user_id", user_id).execute()
     return resp.data
 
 
 def upsert_baseline(user_id: str, metric: str, data: dict) -> dict:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     row = {
         "user_id": user_id,
@@ -139,6 +156,7 @@ def create_assessment(data: dict) -> dict:
 
 
 def get_latest_assessment(user_id: str) -> Optional[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = (
         sb.table("assessments")
@@ -152,6 +170,7 @@ def get_latest_assessment(user_id: str) -> Optional[dict]:
 
 
 def get_assessments(user_id: str, limit: int = 30) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = (
         sb.table("assessments")
@@ -175,6 +194,7 @@ def create_quest(data: dict) -> dict:
 
 
 def get_active_quests(user_id: str) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = (
         sb.table("quests")
@@ -209,6 +229,7 @@ def complete_quest(quest_id: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def get_nest_contacts(user_id: str) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = sb.table("nest_contacts").select("*").eq("user_id", user_id).order("created_at", desc=True).execute()
     return resp.data
@@ -236,6 +257,7 @@ def delete_nest_contact(contact_id: str) -> None:
 # ---------------------------------------------------------------------------
 
 def get_insights(user_id: str, limit: int = 20) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = (
         sb.table("insights")
@@ -265,12 +287,14 @@ def acknowledge_insight(insight_id: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def get_garden_unlocks(user_id: str) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = sb.table("garden_unlocks").select("*").eq("user_id", user_id).execute()
     return resp.data
 
 
 def create_garden_unlock(user_id: str, item_type: str, item_name: str) -> dict:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = sb.table("garden_unlocks").upsert(
         {"user_id": user_id, "item_type": item_type, "item_name": item_name},
@@ -284,6 +308,7 @@ def create_garden_unlock(user_id: str, item_type: str, item_name: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def save_chat_message(user_id: str, role: str, content: str, context: Optional[dict] = None) -> dict:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     row = {"user_id": user_id, "role": role, "content": content}
     if context:
@@ -293,6 +318,7 @@ def save_chat_message(user_id: str, role: str, content: str, context: Optional[d
 
 
 def get_chat_history(user_id: str, limit: int = 20) -> list[dict]:
+    user_id = _resolve_user_id(user_id)
     sb = get_supabase_client()
     resp = (
         sb.table("chat_history")
