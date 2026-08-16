@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { getBloomieUser } from "@/lib/auth";
+import { Scene3DErrorBoundary } from "@/components/shared/scene-error-boundary";
 
 type FlyTarget = "garden" | "today" | "insights" | "nest";
 type FlyToFn = (target: FlyTarget) => Promise<void>;
 
 const LandingScene3D = dynamic(
   () => import("@/components/landing/landing-scene-3d").then((m) => m.LandingScene3D),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="scene-canvas landing-gradient-bg" /> }
 );
 
 const PAGES: Array<{
@@ -88,7 +89,9 @@ function HomePageInner() {
   return (
     <main className="min-h-screen relative overflow-hidden landing-gradient-bg">
       {/* 3D Scene Background */}
-      <LandingScene3D flyToRef={flyToRef} />
+      <Scene3DErrorBoundary>
+        <LandingScene3D flyToRef={flyToRef} />
+      </Scene3DErrorBoundary>
 
       {/* Floating decorative particles */}
       <div className="fixed inset-0 z-[1] pointer-events-none overflow-hidden">

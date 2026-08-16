@@ -15,7 +15,7 @@ import type { GardenState, Quest } from "@/lib/types";
 
 const GardenScene3D = dynamic(
   () => import("@/components/garden/garden-scene-3d").then((m) => m.GardenScene3D),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="scene-canvas bg-gradient-to-b from-bloom-sky to-bloom-cream" /> }
 );
 
 function GardenPage() {

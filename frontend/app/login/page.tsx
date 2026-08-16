@@ -6,13 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { setBloomieUser } from "@/lib/auth";
+import { Scene3DErrorBoundary } from "@/components/shared/scene-error-boundary";
 
 type FlyTarget = "garden" | "today" | "insights" | "nest";
 type FlyToFn = (target: FlyTarget) => Promise<void>;
 
 const LandingScene3D = dynamic(
   () => import("@/components/landing/landing-scene-3d").then((m) => m.LandingScene3D),
-  { ssr: false }
+  { ssr: false, loading: () => <div className="scene-canvas bg-bloom-sky/40" /> }
 );
 
 const DEMO_USERS: Record<string, { password: string; name: string; id: string }> = {
@@ -77,7 +78,9 @@ function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-bloom-sky/40">
       {/* 3D Scene Background */}
-      <LandingScene3D flyToRef={flyToRef} />
+      <Scene3DErrorBoundary>
+        <LandingScene3D flyToRef={flyToRef} />
+      </Scene3DErrorBoundary>
 
       {/* Transition overlay */}
       <AnimatePresence>
