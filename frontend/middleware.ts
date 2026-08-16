@@ -4,10 +4,12 @@ import type { NextRequest } from "next/server";
 function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow login page, API routes, and static assets
+  // Allow public pages, API routes, and static assets
   if (
+    pathname.startsWith("/welcome") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
+    pathname.startsWith("/onboarding") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
@@ -19,7 +21,7 @@ function middleware(request: NextRequest) {
   // Check for session cookie
   const session = request.cookies.get("bloomie_user");
   if (!session) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   return NextResponse.next();
