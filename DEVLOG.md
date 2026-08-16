@@ -1,135 +1,55 @@
-# How I Built Bloomie
+# how i built bloomie (my thought process)
 
-## The Idea
+okay so. i was sitting there staring at all these health apps on my phone and they all made me feel like garbage. like congrats you only walked 3000 steps today, heres a red bar. thanks i feel worse now. 
 
-I was tired of health apps that make me feel bad. Every dashboard with red numbers and missed goals felt like a report card. I thought, what if tracking wellness felt like tending a garden? Not stressful. Not clinical. Just... alive.
+and i thought what if instead of charts and numbers and angry notifications, your health data just... grew a garden. like a little floating island that gets prettier when you take care of yourself. no judgment. no red. just life.
 
-That was the core thought. Your health data should grow something beautiful instead of screaming at you with notifications.
+thats where bloomie came from.
 
-## Starting Point
+i had this older project from a hackathon called canopy that did health monitoring stuff. it had supabase and fastapi and some 3d scenes already. so i didnt start from zero. i took the bones and rebuilt everything around this garden idea.
 
-I had an older hackathon project called Canopy that did some health monitoring with 3D scenes. It had the bones of what I needed. A Next.js frontend, a FastAPI backend, Supabase for the database, and some Three.js 3D stuff. I decided to take that foundation and reimagine it completely as something softer. Something that feels like opening Animal Crossing, not opening a hospital portal.
+the first thing i figured out was the mapping. like what does each part of the garden mean. and i went back and forth a lot on this. eventually i landed on sleep affecting the sky because sleep is literally the foundation of everything. if you sleep badly the whole world should feel different. not dead. just... cloudy.
 
-## Why a Garden?
+then steps bring butterflies because movement should feel light. hydration fills the pond because water is water. social connection brings birds because birds carry messages. mindfulness grows fireflies because you only see them when you slow down.
 
-I kept asking myself, how do you show someone their sleep is off without making them anxious? The answer I landed on was metaphor. Rain in a garden is not punishment. Its just weather. Clouds mean something changed. Flowers bloom when you do good things. Butterflies come when you move. The garden never dies. It just changes seasons.
+and the tree. the big tree grows with consistency. not perfection. just you showing up. i liked that.
 
-That felt right. No shame. Just reflection.
+for the tech i used next.js because its what i know. react 19. tailwind for the styling because i move fast with it. framer motion for animations because without it everything feels dead. and three.js for the 3d garden. i thought about react three fiber but i wanted full control over every vertex so i went raw.
 
-## Choosing the Tech
+the backend is fastapi with a langgraph pipeline. this is the part i spent the most time thinking about. i didnt want to just throw everything at an llm and pray. so i built a proper state machine. step 1 normalize data. step 2 compute personal baselines from YOUR history not some population average. step 3 detect deviations using z-scores. step 4 assess risk with deterministic rules. step 5 THEN let the ai generate a narrative.
 
-For the frontend I stuck with Next.js because I know it well and it handles routing nicely. React 19 gave me server components but honestly I used client components for everything because of all the animations and 3D stuff.
+the ai only writes. it never decides. the decisions are all rule-based. this matters.
 
-Three.js was the obvious choice for the garden. I thought about React Three Fiber but decided raw Three.js gave me more control over exactly how things look. I wanted the island to feel handcrafted, not procedural.
+for the llm i use openrouter with gemini 2.5 flash. fast, cheap, good enough. the structured extraction from voice check-ins works surprisingly well.
 
-Framer Motion handles all the page transitions and micro interactions. Its the difference between the app feeling dead and feeling alive.
+speaking of voice. i built this thing where you can just tap the mic and say "i slept 6 hours and had too much coffee and im feeling kinda stressed" and the ai pulls out sleep_hours: 6, caffeine_mg: 190, stress: 7. then stores all of it. then updates your garden. thats the magic moment i think.
 
-Tailwind because I can move fast and keep things consistent. I built a whole custom color palette I call the "bloom" palette. Soft pastels. Sage greens. Lavender. Peach. Nothing harsh.
+the wellness score took me a while. i researched how allostatic load scoring works in the literature and decided on weights. sleep 25% because its foundational. activity 20%. hydration 15%. mood 15%. consistency 15%. recovery 10%. gives you a single number out of 100 that actually correlates with how youre doing.
 
-## The Backend
+chronotype detection was fun. lion wolf bear dolphin model. i detect it from your sleep timing patterns. then suggest when you should exercise, when your focus peaks, when to wind down. its personalized to your biology not some generic "exercise in the morning" advice.
 
-FastAPI because Python is where my AI pipeline lives. I use LangGraph to build a proper state machine for wellness analysis. Its not just calling an LLM and hoping for the best. The pipeline has real steps.
+social jet lag is a real thing from the research. its the difference between your weekday and weekend sleep. more than 1 hour and it correlates with metabolic issues. i calculate it automatically.
 
-First it normalizes your data. Then it computes personal baselines from your own history using statistics. Then it detects deviations with z-scores. Then it assesses risk with deterministic rules. Only then does it generate a narrative with the LLM.
+the safety stuff. okay this is important. the hackathon specifically said chatbots should not be vulnerable to negative talk. so i built three layers. first: regex crisis detection. if someone types anything about self harm, instant helpline numbers. no ai involved. instant. second: negative self talk patterns trigger empathetic reframing. validates the feeling, redirects gently. third: the system prompt has explicit rules. never validate harm. never diagnose. never agree with self criticism.
 
-The important thing is the LLM only handles summarization and conversation. It never makes medical decisions. Thats all rule-based.
+i tested it by typing horrible things to bloomie and making sure it always responded with care. it does.
 
-## OpenRouter for AI
+the gamification. i didnt want boring streaks. i wanted quests. pond quest: drink water. butterfly walk: take steps. firefly breathe: do breathing exercise. every single log plants something specific in your garden. water lily for hydration. monarch butterfly for steps. night star for sleep. you literally see your garden fill up with things you earned.
 
-I went with OpenRouter because it gives me access to lots of models through one API. I default to Gemini 2.5 Flash because its fast, cheap, and good enough for structured extraction and conversation. If I need something stronger I can switch models without changing code.
+kindness bingo was a last minute addition but i love it. 5x5 grid of random acts of kindness. it detects when you get a line. its dumb and simple and it makes people smile.
 
-## The Personal Baseline Engine
+the breathing exercise page is dark themed on purpose. dark background, ambient particles, expanding circle. i wanted it to feel like its own little world separate from the rest of the app. peaceful.
 
-This is the part I am most proud of technically. Most health apps compare you to population averages. Bloomie learns YOUR normal. If your resting heart rate is usually 65 and today its 78, thats meaningful. Even if 78 is "normal" for most people.
+design wise i went full soft. cream backgrounds. sage greens. lavender. peach. rounded everything. no sharp corners anywhere. glassmorphism for the cards so the 3d shows through. large touch targets. no tiny buttons. the whole thing should feel like a hug not a spreadsheet.
 
-I compute rolling 7-day baselines for every metric. Mean, standard deviation, min, max. Then I use z-scores to flag when something is more than 1.5 standard deviations from your personal normal. Thats when Bloomie says "something looks different today."
+the floating island has a cottage with windows that glow at night. it has a campfire with flickering light. rabbits hop gently. a stone path winds through. at night the stars come out and the moon rises. none of this is necessary for function. all of it is necessary for feeling.
 
-## The Garden Mapping
+i deploy on vercel for frontend and railway for backend and supabase for the database. push to github and everything auto deploys in 2 minutes. the whole stack is free tier.
 
-This took a lot of thought. I had to decide what each visual element means.
+honestly the hardest part wasnt coding. it was tone. making bloomie sound warm without sounding fake. encouraging without being dismissive. noticing changes without causing anxiety. thats a system prompt problem not a code problem and i rewrote it like 5 times.
 
-Sleep controls the sky because sleep is foundational. Good sleep gives you clear skies. Bad sleep brings clouds.
+the second hardest part was deciding what the garden should NOT do. it should never punish. rain is not punishment its just change. a cloudy sky is not failure its just a signal. even on your worst day the garden has life in it. flowers still exist. the pond still has water. nothing dies.
 
-Steps bring butterflies because movement should feel light and playful.
+thats the whole philosophy. your wellness is a living thing. it changes. it grows. sometimes its rainy. but rain helps things grow too.
 
-Hydration fills the pond because water is literal.
-
-Social connection brings birds because they carry messages.
-
-Mindfulness creates fireflies because it only shows up when you slow down enough to notice.
-
-The main tree grows with consistency. Not perfection. Just showing up.
-
-## Safety and Guardrails
-
-The hackathon description specifically said chatbots should not be vulnerable to negative talk. I took this seriously. I built three layers of protection.
-
-First, regex-based crisis detection. If someone says anything related to self-harm, the system immediately responds with helpline numbers. 988, Crisis Text Line. No LLM involved. Just instant resources.
-
-Second, negative self-talk detection. If someone says "I am worthless" or "nobody loves me," Bloomie responds with empathetic reframing. It validates the feeling but redirects gently.
-
-Third, the system prompt explicitly tells the LLM to never validate harm, never diagnose, never agree with self-criticism, and always suggest professional help for serious concerns.
-
-## The Voice Check-in
-
-This was inspired by how people actually talk about their health. Nobody says "my mood is 7 out of 10." They say "I slept okay but I am feeling kinda stressed and had too much coffee." So I built an endpoint that takes natural language and uses the LLM to extract structured metrics from it. Sleep hours, mood score, stress level, caffeine intake. All pulled from casual speech.
-
-The frontend uses the Web Speech API so you can literally tap the mic and just talk. It feels natural.
-
-## The Wellness Score
-
-I researched how composite health scores work in the literature. Allostatic load uses biomarkers with equal weighting, but I thought a weighted approach makes more sense for daily wellness. Sleep gets 25% because research shows its foundational. Activity gets 20%. Hydration 15%. Mood 15%. Recovery 10%. Consistency 15%.
-
-The result is a single number 0 to 100 that actually means something and updates as you log data.
-
-## Chronotype Detection
-
-I learned about the Lion, Wolf, Bear, Dolphin chronotype model. Your sleep timing reveals whether you are an early bird, night owl, or somewhere in between. Bloomie detects this from your sleep patterns and then suggests optimal times for exercise, focus work, and winding down.
-
-## Social Jet Lag
-
-This is from real research by Wittmann and colleagues. The difference between your weekday and weekend sleep schedule creates a kind of internal jet lag. More than 1 hour difference is associated with higher BMI and worse wellbeing. Bloomie calculates this automatically and shows you the impact.
-
-## The Gamification
-
-I did not want boring streaks. I wanted quests. Little daily challenges that feel like a game. Drink water is a Pond Quest. Walk is a Butterfly Quest. Each completed log plants something specific in your garden. A Water Lily for hydration. A Monarch butterfly for steps. A Night Star for sleep.
-
-The 8-level progression system means your garden literally expands over time. You start with a seedling and eventually unlock a full enchanted night garden with northern lights.
-
-## Design Decisions
-
-I chose soft rounded fonts. Nunito for body text and Outfit for headings. Both friendly. Nothing clinical.
-
-The color palette avoids pure whites and harsh colors. Everything is slightly warm. Cream backgrounds. Sage greens. Gentle lavenders. The vibe is cozy and inviting.
-
-Glassmorphism for the overlay cards because it lets the 3D scene show through and creates depth without heaviness.
-
-Every interaction has a subtle animation. Buttons scale on tap. Cards float on hover. Pages transition smoothly. It makes the whole thing feel responsive and alive.
-
-## The 3D Garden
-
-The floating island has a main tree, flowers, a pond with lily pads, a cottage with glowing windows at night, a campfire, rabbits, a stone path, and rocks on the edges. At night, stars appear, the moon rises, and fireflies glow. At sunset, everything turns warm orange.
-
-The camera slowly orbits the island. Butterflies flutter with random movement. Birds circle overhead. Clouds drift. The island itself gently floats up and down.
-
-Its not photorealistic. Its not trying to be. Its cel-shaded and cozy. Like a little world you want to visit.
-
-## Deployment
-
-Supabase for the database because its free, instant, and gives me Postgres with zero config. Railway for the backend because it deploys from GitHub automatically. Vercel for the frontend because Next.js just works there.
-
-The whole thing deploys in under 3 minutes when I push to main.
-
-## What I Learned
-
-The hardest part was not the code. It was deciding what NOT to build. I could add a million features but the garden metaphor only works if its simple enough that people actually understand it without reading a manual.
-
-The second hardest part was making the AI feel warm without being fake. Bloomie has to sound caring but never condescending. Encouraging but never dismissive of real problems. Thats a hard tone to nail in a system prompt.
-
-The third thing I learned is that safety features are not optional for wellness apps. Someone will type something dark into any chatbot. You have to be ready for that moment.
-
-## The Result
-
-Bloomie is a wellness companion that turns your real health data into a living garden. It tracks you without judging you. It notices changes without diagnosing them. It grows with you. And it never ever makes you feel bad about a rough day.
-
-Thats what I wanted to build. And I think I got pretty close.
+i think thats what makes bloomie different from every other health app ive seen. it doesnt make you feel bad. it just grows with you.
