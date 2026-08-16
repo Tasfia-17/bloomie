@@ -7,9 +7,9 @@ import { motion } from "framer-motion";
 const NAV_ITEMS = [
   { href: "/garden", icon: "🌳", label: "Garden" },
   { href: "/today", icon: "☀️", label: "Today" },
+  { href: "/log", icon: "➕", label: "Log", isAction: true },
   { href: "/insights", icon: "📊", label: "Insights" },
   { href: "/nest", icon: "🪺", label: "Nest" },
-  { href: "/ecosystem", icon: "🌍", label: "World" },
 ];
 
 export function BottomNav() {
@@ -20,6 +20,27 @@ export function BottomNav() {
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
+          const isAction = item.isAction;
+
+          if (isAction) {
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex flex-col items-center gap-0.5 -mt-4"
+              >
+                <motion.div
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-bloom-sage to-bloom-forest flex items-center justify-center text-xl shadow-bloom text-white"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {item.icon}
+                </motion.div>
+                <span className="text-[10px] font-semibold text-bloom-forest">{item.label}</span>
+              </Link>
+            );
+          }
+
           return (
             <Link
               key={item.href}
