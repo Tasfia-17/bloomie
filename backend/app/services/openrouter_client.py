@@ -13,7 +13,7 @@ def get_llm() -> ChatOpenAI:
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY must be set")
 
-    model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-001")
+    model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 
     return ChatOpenAI(
         model=model,
@@ -35,7 +35,7 @@ def get_creative_llm() -> ChatOpenAI:
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY must be set")
 
-    model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-001")
+    model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash")
 
     return ChatOpenAI(
         model=model,
