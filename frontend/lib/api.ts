@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 const TIMEOUT_MS = 15000;
 
 type RequestOptions = {
@@ -9,6 +9,10 @@ type RequestOptions = {
 };
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  if (!API_URL) {
+    throw new Error("No API URL configured");
+  }
+
   const { method = "GET", body, headers = {}, timeout = TIMEOUT_MS } = options;
 
   const controller = new AbortController();
